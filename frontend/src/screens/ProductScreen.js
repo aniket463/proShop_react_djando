@@ -1,12 +1,21 @@
-import React from "react";
-import Product from "../components/Product";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, ListGroup, Button, Card,Image, ListGroupItem } from "react-bootstrap";
+import { Row, Col, ListGroup, Button, Card, Image } from "react-bootstrap";
 import Rating from "../components/Rating";
-import products from "../products";
+// import products from "../products";
+import axios from "axios";
 
 function ProductScreen({ match }) {
-  const product = products.find((p) => p._id === match.params.id);
+  // const product = products.find((p) => p._id === match.params.id);
+  const [product, setProduct] = useState([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const { data } = await axios.get(`/api/products/${match.params.id}`);
+      setProduct(data);
+    }
+    fetchProducts();
+  }, [match]);
 
   return (
     <div>
@@ -20,21 +29,21 @@ function ProductScreen({ match }) {
 
         <Col md={3}>
           <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <h3>{product.name}</h3>
-                </ListGroup.Item>
+            <ListGroup.Item>
+              <h3>{product.name}</h3>
+            </ListGroup.Item>
 
-                <ListGroup.Item>
-                <Rating value={product.rating} text = {`${product.numReviews} reviews`} color={'#f8e825'}/>
-                </ListGroup.Item>
+            <ListGroup.Item>
+              <Rating
+                value={product.rating}
+                text={`${product.numReviews} reviews`}
+                color={"#f8e825"}
+              />
+            </ListGroup.Item>
 
-                <ListGroup.Item>
-                  Price: ${product.price}
-                </ListGroup.Item>
+            <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
 
-                <ListGroup.Item>
-                  Description: {product.description}
-                </ListGroup.Item>
+            <ListGroup.Item>Description: {product.description}</ListGroup.Item>
           </ListGroup>
         </Col>
 
@@ -45,7 +54,7 @@ function ProductScreen({ match }) {
                 <Row>
                   <Col>Price:</Col>
                   <Col>
-                  <strong>${product.price}</strong>
+                    <strong>${product.price}</strong>
                   </Col>
                 </Row>
               </ListGroup.Item>
@@ -54,13 +63,20 @@ function ProductScreen({ match }) {
                 <Row>
                   <Col>Status:</Col>
                   <Col>
-                    {product.countInStock > 0 ? 'In Stock': 'Out Of Stock'}
+                    {product.countInStock > 0 ? "In Stock" : "Out Of Stock"}
                   </Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
-                <Button style={{width: "100%"}} disabled={product.countInStock=== 0}  className='btn btn-block' type='button'>Add to Cart</Button>
+                <Button
+                  style={{ width: "100%" }}
+                  disabled={product.countInStock === 0}
+                  className="btn btn-block"
+                  type="button"
+                >
+                  Add to Cart
+                </Button>
               </ListGroup.Item>
             </ListGroup>
           </Card>
